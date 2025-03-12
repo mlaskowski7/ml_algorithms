@@ -9,9 +9,14 @@ type Vector struct {
 	rows int32
 	cols int32
 	data [][]int32
+	class string
 }
 
-func NewVector(data [][]int32) (*Vector, error) {
+func (v *Vector) Class() string {
+    return v.class
+}
+
+func NewVector(data [][]int32, vecClass string) (*Vector, error) {
 	rows := int32(len(data))
 	if rows == 0 {
 		return nil, fmt.Errorf("empty vector")
@@ -22,6 +27,7 @@ func NewVector(data [][]int32) (*Vector, error) {
 		rows: rows,
 		cols: cols,
 		data: data,
+		class: vecClass,
 	}, nil
 }
 
