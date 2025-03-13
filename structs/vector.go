@@ -114,6 +114,7 @@ func (v *Vector) DotProduct(v2 *Vector) (int32, error) {
 }
 
 func (v *Vector) PrintVector() {
+	fmt.Printf("class: %s", v.class)
 	for _, row := range v.data {
 		fmt.Println(row)
 	}

@@ -9,10 +9,15 @@ import (
 	"strconv"
 )
 
-func performKnnFromCsv(filename string) (string, error) {
+type Dataset struct {
+	trainDataset []structs.Vector
+	testDataset  []structs.Vector
+}
+
+func NewDatasetFromCsv(filename string) (*Dataset, error) {
 	file, err := os.Open("data/" + filename)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	defer func(file *os.File) {
@@ -26,7 +31,7 @@ func performKnnFromCsv(filename string) (string, error) {
 	fileReader := csv.NewReader(file)
 	lines, err := fileReader.ReadAll()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	var dataset []structs.Vector
@@ -44,7 +49,25 @@ func performKnnFromCsv(filename string) (string, error) {
 
 	trainDataSet, testDataSet := commons.TrainTestSplit(&dataset)
 
-	fmt.Printf("Train Set Size: %d, Test Set Size: %d\n", len(trainDataSet), len(testDataSet))
-	return "", nil
+	return &Dataset{trainDataSet, testDataSet}, nil
+}
 
+func (d *Dataset) PredictWithKnn(observation structs.Vector, k int) (class string) {
+	knn := NewKnn(k, d.trainDataset)
+	class = knn.PerformPrediction(&observation)
+	return
+}
+
+func (d *Dataset) TestAlgorithm(k int) (result string) {
+	expectedClasses := make([]string, len(d.trainDataset))
+	actualClasses := make([]string, len(d.trainDataset))
+
+	for i, vec := range d.trainDataset {
+		expectedClasses[i] = vec.Class()
+		actualClasses[i] = d.PredictWithKnn(vec, k)
+	}
+
+	accuracy := commons.MeasureAccuracy(expectedClasses, actualClasses)
+	result = fmt.Sprintf("%d %", accuracy)
+	return
 }

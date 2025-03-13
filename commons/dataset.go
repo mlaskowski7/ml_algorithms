@@ -13,7 +13,7 @@ func TrainTestSplit(dataset *[]structs.Vector) ([]structs.Vector, []structs.Vect
 		dereferencedDataset[i], dereferencedDataset[j] = dereferencedDataset[j], dereferencedDataset[i]
 	})
 
-	trainSetLen := int(trainSetPercent * float64(len(dereferencedDataset)))
+	trainSetLen := int(trainSetPercent * float64(len(dereferencedDataset)+1))
 
-	return dereferencedDataset[:trainSetLen], dereferencedDataset[trainSetLen:]
+	return dereferencedDataset[:trainSetLen], dereferencedDataset[trainSetLen+1:]
 }
