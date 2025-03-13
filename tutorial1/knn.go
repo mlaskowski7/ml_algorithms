@@ -30,7 +30,7 @@ func (knn *KNearestNeighbours) PerformPrediction(vec *structs.Vector) string {
 
 func (knn *KNearestNeighbours) calculateDistances(vec *structs.Vector) {
 	for i := 0; i < knn.k; i++ {
-		observation := knn.trainDataset[len(knn.trainDataset) - i]
+		observation := knn.trainDataset[len(knn.trainDataset) - 1 - i]
 		class := observation.Class()
 
 		if _, ok := knn.distances[class]; !ok {
