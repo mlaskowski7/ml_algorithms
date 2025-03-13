@@ -5,18 +5,18 @@ import (
 )
 
 type KNearestNeighbours struct {
-	k int;
-	trainDataset []structs.Vector;
-	distances map[string][]float64;
-	modes map[string]float64;
+	k            int
+	trainDataset []structs.Vector
+	distances    map[string][]float64
+	modes        map[string]float64
 }
 
-func NewKnn (k int, trainDataset []structs.Vector) *KNearestNeighbours {
+func NewKnn(k int, trainDataset []structs.Vector) *KNearestNeighbours {
 	return &KNearestNeighbours{
-		k: k,
+		k:            k,
 		trainDataset: trainDataset,
-		distances: make(map[string][]float64),
-		modes: make(map[string]float64),
+		distances:    make(map[string][]float64),
+		modes:        make(map[string]float64),
 	}
 }
 
@@ -30,7 +30,7 @@ func (knn *KNearestNeighbours) PerformPrediction(vec *structs.Vector) string {
 
 func (knn *KNearestNeighbours) calculateDistances(vec *structs.Vector) {
 	for i := 0; i < knn.k; i++ {
-		observation := knn.trainDataset[len(knn.trainDataset) - 1 - i]
+		observation := knn.trainDataset[len(knn.trainDataset)-1-i]
 		class := observation.Class()
 
 		if _, ok := knn.distances[class]; !ok {
@@ -38,14 +38,14 @@ func (knn *KNearestNeighbours) calculateDistances(vec *structs.Vector) {
 		}
 
 		euclideanDist, _ := observation.EuclideanDistance(vec)
-        knn.distances[class] = append(knn.distances[class], euclideanDist)
+		knn.distances[class] = append(knn.distances[class], euclideanDist)
 	}
 }
 
 func (knn *KNearestNeighbours) sortDistances() {
 	for class, distances := range knn.distances {
-        knn.distances[class] = knn.insertionSort(distances)
-    }
+		knn.distances[class] = knn.insertionSort(distances)
+	}
 }
 
 func (knn *KNearestNeighbours) calculateModes() {
@@ -56,16 +56,16 @@ func (knn *KNearestNeighbours) calculateModes() {
 			frequencies[dist]++
 		}
 
-		var mostOccuring float64
+		var mostOccurring float64
 		var maxCount int
 		for dist, count := range frequencies {
 			if count > maxCount {
-				mostOccuring = dist
+				mostOccurring = dist
 				maxCount = count
 			}
 		}
-		
-		knn.modes[class] = mostOccuring
+
+		knn.modes[class] = mostOccurring
 	}
 }
 
@@ -84,16 +84,15 @@ func (knn *KNearestNeighbours) getMinMode() string {
 }
 
 func (knn *KNearestNeighbours) insertionSort(arr []float64) []float64 {
-    for i := 1; i < len(arr); i++ {
-        key := arr[i]
-        j := i - 1
+	for i := 1; i < len(arr); i++ {
+		key := arr[i]
+		j := i - 1
 
-        for j >= 0 && arr[j] > key {
-            arr[j+1] = arr[j]
-            j--
-        }
-        arr[j+1] = key
-    }
-    return arr
+		for j >= 0 && arr[j] > key {
+			arr[j+1] = arr[j]
+			j--
+		}
+		arr[j+1] = key
+	}
+	return arr
 }
-
