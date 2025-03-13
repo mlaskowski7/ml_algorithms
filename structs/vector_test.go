@@ -7,7 +7,7 @@ import (
 
 func TestNewVector(t *testing.T) {
 	data := [][]int32{{1, 2}, {3, 4}}
-	vec, err := NewVector(data)
+	vec, err := NewVector(data, "A")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -15,15 +15,15 @@ func TestNewVector(t *testing.T) {
 		t.Fatalf("unexpected vector dimensions: got [%d,%d], expected [2,2]", vec.rows, vec.cols)
 	}
 
-	_, err = NewVector([][]int32{})
+	_, err = NewVector([][]int32{}, "B")
 	if err == nil {
 		t.Fatal("expected error for empty vector, got nil")
 	}
 }
 
 func TestAddVector(t *testing.T) {
-	v1, _ := NewVector([][]int32{{1, 2}, {3, 4}})
-	v2, _ := NewVector([][]int32{{5, 6}, {7, 8}})
+	v1, _ := NewVector([][]int32{{1, 2}, {3, 4}}, "A")
+	v2, _ := NewVector([][]int32{{5, 6}, {7, 8}}, "A")
 
 	result, err := v1.AddVector(v2)
 	if err != nil {
@@ -40,7 +40,7 @@ func TestAddVector(t *testing.T) {
 		}
 	}
 
-	v3, _ := NewVector([][]int32{{1, 2, 3}})
+	v3, _ := NewVector([][]int32{{1, 2, 3}}, "A")
 	_, err = v1.AddVector(v3)
 	if err == nil {
 		t.Fatal("expected dimension mismatch error, got nil")
@@ -48,7 +48,7 @@ func TestAddVector(t *testing.T) {
 }
 
 func TestScalarMultiply(t *testing.T) {
-	v1, _ := NewVector([][]int32{{1, 2}, {3, 4}})
+	v1, _ := NewVector([][]int32{{1, 2}, {3, 4}}, "A")
 	result := v1.ScalarMultiply(2)
 
 	expected := [][]int32{{2, 4}, {6, 8}}
@@ -63,7 +63,7 @@ func TestScalarMultiply(t *testing.T) {
 }
 
 func TestEuclideanNorm(t *testing.T) {
-	v1, _ := NewVector([][]int32{{3, 4}})
+	v1, _ := NewVector([][]int32{{3, 4}}, "A")
 	norm := v1.EuclideanNorm()
 
 	expected := 5.0 // sqrt(3^2 + 4^2)
@@ -73,8 +73,8 @@ func TestEuclideanNorm(t *testing.T) {
 }
 
 func TestEuclideanDistance(t *testing.T) {
-	v1, _ := NewVector([][]int32{{1, 2}})
-	v2, _ := NewVector([][]int32{{4, 6}})
+	v1, _ := NewVector([][]int32{{1, 2}}, "A")
+	v2, _ := NewVector([][]int32{{4, 6}}, "A")
 
 	dist, err := v1.EuclideanDistance(v2)
 	if err != nil {
@@ -86,7 +86,7 @@ func TestEuclideanDistance(t *testing.T) {
 		t.Errorf("unexpected distance: got %f, expected %f", dist, expected)
 	}
 
-	v3, _ := NewVector([][]int32{{1}, {2}})
+	v3, _ := NewVector([][]int32{{1}, {2}}, "A")
 	_, err = v1.EuclideanDistance(v3)
 	if err == nil {
 		t.Fatal("expected dimension mismatch error, got nil")
@@ -94,8 +94,8 @@ func TestEuclideanDistance(t *testing.T) {
 }
 
 func TestDotProduct(t *testing.T) {
-	v1, _ := NewVector([][]int32{{1, 2}})
-	v2, _ := NewVector([][]int32{{3, 4}})
+	v1, _ := NewVector([][]int32{{1, 2}}, "A")
+	v2, _ := NewVector([][]int32{{3, 4}}, "A")
 
 	dot, err := v1.DotProduct(v2)
 	if err != nil {
@@ -107,7 +107,7 @@ func TestDotProduct(t *testing.T) {
 		t.Errorf("unexpected dot product: got %d, expected %d", dot, expected)
 	}
 
-	v3, _ := NewVector([][]int32{{1}, {2}})
+	v3, _ := NewVector([][]int32{{1}, {2}}, "A")
 	_, err = v1.DotProduct(v3)
 	if err == nil {
 		t.Fatal("expected dimension mismatch error, got nil")

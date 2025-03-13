@@ -3,13 +3,11 @@ package knn
 import (
 	"encoding/csv"
 	"fmt"
-	"math/rand"
+	"naiTasks/commons"
 	"naiTasks/structs"
 	"os"
 	"strconv"
 )
-
-const TRAINSET_LEN = 100
 
 func performKnnFromCsv(filename string) (string, error) {
 	file, err := os.Open("data/" + filename)
@@ -44,15 +42,9 @@ func performKnnFromCsv(filename string) (string, error) {
 		dataset = append(dataset, *vec)
 	}
 
-	trainDataSet, testDataSet := splitToTrainAndTestSets(&dataset)
+	trainDataSet, testDataSet := commons.TrainTestSplit(&dataset)
 
-}
+	fmt.Printf("Train Set Size: %d, Test Set Size: %d\n", len(trainDataSet), len(testDataSet))
+	return "", nil
 
-func splitToTrainAndTestSets(dataset *[]structs.Vector) ([]structs.Vector, []structs.Vector) {
-	dereferencedDataset := *dataset
-	rand.Shuffle(len(dereferencedDataset), func(i, j int) {
-		dereferencedDataset[i], dereferencedDataset[j] = dereferencedDataset[j], dereferencedDataset[i]
-	})
-
-	return dereferencedDataset[:TRAINSET_LEN], dereferencedDataset[TRAINSET_LEN:]
 }
