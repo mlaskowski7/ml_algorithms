@@ -24,7 +24,6 @@ func (knn *KNearestNeighbours) PerformPrediction(vec *structs.Vector) string {
 	knn.calculateDistances(vec)
 	knn.sortDistances()
 	knn.calculateModes()
-
 	return knn.getMinMode()
 }
 

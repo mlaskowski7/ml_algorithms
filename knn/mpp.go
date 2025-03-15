@@ -15,7 +15,7 @@ type Dataset struct {
 }
 
 func NewDatasetFromCsv(filename string) (*Dataset, error) {
-	file, err := os.Open("data/" + filename)
+	file, err := os.Open(filename)
 	if err != nil {
 		return nil, err
 	}
@@ -68,6 +68,6 @@ func (d *Dataset) TestAlgorithm(k int) (result string) {
 	}
 
 	accuracy := commons.MeasureAccuracy(expectedClasses, actualClasses)
-	result = fmt.Sprintf("%d %", accuracy)
+	result = fmt.Sprintf("%d%%", accuracy)
 	return
 }
