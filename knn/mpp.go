@@ -52,22 +52,26 @@ func NewDatasetFromCsv(filename string) (*Dataset, error) {
 	return &Dataset{trainDataSet, testDataSet}, nil
 }
 
-func (d *Dataset) PredictWithKnn(observation structs.Vector, k int) (class string) {
+func (d *Dataset) PredictWithKnn(observation structs.Vector, k int) (class string, err error) {
 	knn := NewKnn(k, d.trainDataset)
-	class = knn.PerformPrediction(&observation)
+	class, err = knn.PerformPrediction(&observation)
 	return
 }
 
-func (d *Dataset) TestAlgorithm(k int) (result string) {
-	expectedClasses := make([]string, len(d.trainDataset))
-	actualClasses := make([]string, len(d.trainDataset))
+func (d *Dataset) TestAlgorithm(k int) (string, error) {
+	expectedClasses := make([]string, len(d.testDataset))
+	actualClasses := make([]string, len(d.testDataset))
 
-	for i, vec := range d.trainDataset {
+	for i, vec := range d.testDataset {
 		expectedClasses[i] = vec.Class()
-		actualClasses[i] = d.PredictWithKnn(vec, k)
+		predicted, err := d.PredictWithKnn(vec, k)
+		if err != nil {
+			fmt.Printf("ERROR OCCURRED IN K = %d, not evaluating this k further", i)
+			return "", err
+		}
+		actualClasses[i] = predicted
 	}
 
 	accuracy := commons.MeasureAccuracy(expectedClasses, actualClasses)
-	result = fmt.Sprintf("%d%%", accuracy)
-	return
+	return fmt.Sprintf("%d%%", accuracy), nil
 }

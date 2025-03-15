@@ -78,7 +78,10 @@ func TestPerformPrediction(t *testing.T) {
 	knn := NewKnn(2, data)
 	testVec := newVectorHelper([][]int32{{2, 2}}, "C")
 
-	predicted := knn.PerformPrediction(testVec)
+	predicted, err := knn.PerformPrediction(testVec)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if predicted != "A" {
 		t.Errorf("Expected prediction to be 'A', but was %v", predicted)

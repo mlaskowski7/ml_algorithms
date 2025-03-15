@@ -9,5 +9,5 @@ func MeasureAccuracy(expectedClasses []string, actualClasses []string) int {
 		}
 	}
 
-	return int(correctCounter/len(actualClasses)) * 100
+	return int(float64(correctCounter) / float64(len(actualClasses)) * 100)
 }

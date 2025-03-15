@@ -5,7 +5,7 @@ import (
 )
 
 func TestNewDatasetFromCsv(t *testing.T) {
-	dataset, err := NewDatasetFromCsv("IRIS.csv")
+	dataset, err := NewDatasetFromCsv("../data/IRIS.csv")
 	if err != nil {
 		t.Fatalf("Failed to create new dataset from csv file -> %s", err.Error())
 	}
@@ -26,7 +26,11 @@ func TestPredictWithKnn(t *testing.T) {
 	}
 
 	observation := dataset.testDataset[0]
-	predictedClass := dataset.PredictWithKnn(observation, 3)
+	predictedClass, err := dataset.PredictWithKnn(observation, 3)
+
+	if err != nil {
+		t.Fatalf("PredictWithKnn() failed: %s", err.Error())
+	}
 
 	if predictedClass == "" {
 		t.Fatalf("Predicted class should not be empty")

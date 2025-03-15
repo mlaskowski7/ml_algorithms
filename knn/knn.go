@@ -1,6 +1,7 @@
 package knn
 
 import (
+	"fmt"
 	"naiTasks/structs"
 )
 
@@ -20,11 +21,14 @@ func NewKnn(k int, trainDataset []structs.Vector) *KNearestNeighbours {
 	}
 }
 
-func (knn *KNearestNeighbours) PerformPrediction(vec *structs.Vector) string {
+func (knn *KNearestNeighbours) PerformPrediction(vec *structs.Vector) (string, error) {
+	if len(knn.trainDataset) < knn.k {
+		return "", fmt.Errorf(" The training dataset is too short, the length is %d and k = %d", len(knn.trainDataset), knn.k)
+	}
 	knn.calculateDistances(vec)
 	knn.sortDistances()
 	knn.calculateModes()
-	return knn.getMinMode()
+	return knn.getMinMode(), nil
 }
 
 func (knn *KNearestNeighbours) calculateDistances(vec *structs.Vector) {
