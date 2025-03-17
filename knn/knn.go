@@ -8,16 +8,17 @@ import (
 type KNearestNeighbours struct {
 	k            int
 	trainDataset []structs.Vector
-	distances    map[string][]float64
-	modes        map[string]float64
+}
+
+type Neighbour struct {
+	Class    string
+	Distance float64
 }
 
 func NewKnn(k int, trainDataset []structs.Vector) *KNearestNeighbours {
 	return &KNearestNeighbours{
 		k:            k,
 		trainDataset: trainDataset,
-		distances:    make(map[string][]float64),
-		modes:        make(map[string]float64),
 	}
 }
 
@@ -25,73 +26,59 @@ func (knn *KNearestNeighbours) PerformPrediction(vec *structs.Vector) (string, e
 	if len(knn.trainDataset) < knn.k {
 		return "", fmt.Errorf(" The training dataset is too short, the length is %d and k = %d", len(knn.trainDataset), knn.k)
 	}
-	knn.calculateDistances(vec)
-	knn.sortDistances()
-	knn.calculateModes()
-	return knn.getMinMode(), nil
+
+	neighbours := knn.calculateDistances(vec)
+	votes := knn.calculateVotes(neighbours)
+
+	return knn.finalPrediction(votes), nil
 }
 
-func (knn *KNearestNeighbours) calculateDistances(vec *structs.Vector) {
+func (knn *KNearestNeighbours) calculateVotes(neighbours []Neighbour) map[string]int {
+	votes := make(map[string]int)
 	for i := 0; i < knn.k; i++ {
-		observation := knn.trainDataset[len(knn.trainDataset)-1-i]
-		class := observation.Class()
-
-		if _, ok := knn.distances[class]; !ok {
-			knn.distances[class] = make([]float64, 0)
-		}
-
-		euclideanDist, _ := observation.EuclideanDistance(vec)
-		knn.distances[class] = append(knn.distances[class], euclideanDist)
+		votes[neighbours[i].Class]++
 	}
+
+	return votes
 }
 
-func (knn *KNearestNeighbours) sortDistances() {
-	for class, distances := range knn.distances {
-		knn.distances[class] = knn.insertionSort(distances)
-	}
-}
-
-func (knn *KNearestNeighbours) calculateModes() {
-	for class, distances := range knn.distances {
-		frequencies := make(map[float64]int)
-
-		for _, dist := range distances {
-			frequencies[dist]++
-		}
-
-		var mostOccurring float64
-		var maxCount int
-		for dist, count := range frequencies {
-			if count > maxCount {
-				mostOccurring = dist
-				maxCount = count
-			}
-		}
-
-		knn.modes[class] = mostOccurring
-	}
-}
-
-func (knn *KNearestNeighbours) getMinMode() string {
-	var minKey string
-	var minValue float64 = 1e9
-
-	for key, value := range knn.modes {
-		if value < minValue {
-			minValue = value
-			minKey = key
+func (knn *KNearestNeighbours) finalPrediction(votes map[string]int) string {
+	var predictedClass string
+	maxVotes := -1
+	for class, count := range votes {
+		if count > maxVotes {
+			maxVotes = count
+			predictedClass = class
 		}
 	}
 
-	return minKey
+	return predictedClass
 }
 
-func (knn *KNearestNeighbours) insertionSort(arr []float64) []float64 {
+func (knn *KNearestNeighbours) calculateDistances(vec *structs.Vector) []Neighbour {
+	var neighbours []Neighbour
+
+	for _, observation := range knn.trainDataset {
+		dist, err := observation.EuclideanDistance(vec)
+		if err != nil {
+			continue
+		}
+
+		neighbours = append(neighbours, Neighbour{
+			Class:    observation.Class(),
+			Distance: dist,
+		})
+	}
+
+	return knn.insertionSort(neighbours)
+}
+
+func (knn *KNearestNeighbours) insertionSort(arr []Neighbour) []Neighbour {
 	for i := 1; i < len(arr); i++ {
 		key := arr[i]
 		j := i - 1
 
-		for j >= 0 && arr[j] > key {
+		for j >= 0 && arr[j].Distance > key.Distance {
 			arr[j+1] = arr[j]
 			j--
 		}

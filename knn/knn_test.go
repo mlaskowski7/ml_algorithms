@@ -7,92 +7,81 @@ import (
 
 func TestNewKnn(t *testing.T) {
 	testTrainingSet := []structs.Vector{
-		*newVectorHelper([][]int32{{1, 2}}, "A"),
-		*newVectorHelper([][]int32{{3, 4}}, "B"),
+		*newVectorHelper([][]float64{{1, 2}}, "A"),
+		*newVectorHelper([][]float64{{3, 4}}, "B"),
 	}
 
 	knn := NewKnn(2, testTrainingSet)
 
-	k := knn.k
-	if k != 2 {
-		t.Errorf("Expected k to be 2, but was %d", k)
+	if knn.k != 2 {
+		t.Errorf("Expected k to be 2, but was %d", knn.k)
 	}
 
-	trainDataSize := len(knn.trainDataset)
-	if trainDataSize != 2 {
-		t.Errorf("Expected train data size to be 2, but was %d", trainDataSize)
+	if len(knn.trainDataset) != 2 {
+		t.Errorf("Expected train dataset length to be 2, but was %d", len(knn.trainDataset))
 	}
 }
 
 func TestCalculateDistances(t *testing.T) {
 	data := []structs.Vector{
-		*newVectorHelper([][]int32{{1, 1}}, "A"),
-		*newVectorHelper([][]int32{{4, 4}}, "B"),
+		*newVectorHelper([][]float64{{1, 1}}, "A"),
+		*newVectorHelper([][]float64{{4, 4}}, "B"),
 	}
 
 	knn := NewKnn(2, data)
-	testVec := newVectorHelper([][]int32{{2, 2}}, "C")
 
-	knn.calculateDistances(testVec)
+	testVec := newVectorHelper([][]float64{{2, 2}}, "C")
 
-	if len(knn.distances) != 2 {
-		t.Errorf("Expected distances map size to be 2, got %d", len(knn.distances))
+	neighbours := knn.calculateDistances(testVec)
+
+	if len(neighbours) != 2 {
+		t.Errorf("Expected 2 neighbours, but got %d", len(neighbours))
 	}
 
-	if int(knn.distances["A"][0]) != 1 && int(knn.distances["B"][0]) != 3 {
-		t.Error("Expected calculated distances are uncorrect")
-	}
-}
-
-func TestSortDistances(t *testing.T) {
-	knn := &KNearestNeighbours{
-		distances: map[string][]float64{
-			"A": {5.0, 2.0, 8.0},
-			"B": {3.0, 1.0, 4.0},
-		},
+	expectedOrder := []string{"A", "B"}
+	for i, neighbor := range neighbours {
+		if neighbor.Class != expectedOrder[i] {
+			t.Errorf("Expected class %s at index %d, but got %s", expectedOrder[i], i, neighbor.Class)
+		}
 	}
 
-	knn.sortDistances()
-
-	expected := map[string][]float64{
-		"A": {2.0, 5.0, 8.0},
-		"B": {1.0, 3.0, 4.0},
+	expectedDistances := []float64{
+		1.4142135623730951,
+		2.8284271247461903,
 	}
 
-	for class, classDistances := range knn.distances {
-		for index, value := range classDistances {
-			if value != expected[class][index] {
-				t.Errorf("Expected distance to be %v, but was %v", expected[class][index], value)
-			}
+	for i, neighbor := range neighbours {
+		if neighbor.Distance != expectedDistances[i] {
+			t.Errorf("Expected distance %.4f, but got %.4f", expectedDistances[i], neighbor.Distance)
 		}
 	}
 }
 
 func TestPerformPrediction(t *testing.T) {
 	data := []structs.Vector{
-		*newVectorHelper([][]int32{{1, 1}}, "A"),
-		*newVectorHelper([][]int32{{2, 2}}, "A"),
-		*newVectorHelper([][]int32{{3, 3}}, "B"),
+		*newVectorHelper([][]float64{{1, 1}}, "A"),
+		*newVectorHelper([][]float64{{2, 2}}, "A"),
+		*newVectorHelper([][]float64{{3, 3}}, "B"),
 	}
 
 	knn := NewKnn(2, data)
-	testVec := newVectorHelper([][]int32{{2, 2}}, "C")
+
+	testVec := newVectorHelper([][]float64{{2, 2}}, "C")
 
 	predicted, err := knn.PerformPrediction(testVec)
 	if err != nil {
-		t.Error(err)
+		t.Fatalf("PerformPrediction returned an error: %v", err)
 	}
 
 	if predicted != "A" {
-		t.Errorf("Expected prediction to be 'A', but was %v", predicted)
+		t.Errorf("Expected predicted class to be 'A', but got '%s'", predicted)
 	}
 }
 
-func newVectorHelper(data [][]int32, class string) *structs.Vector {
+func newVectorHelper(data [][]float64, class string) *structs.Vector {
 	v, err := structs.NewVector(data, class)
 	if err != nil {
 		panic(err)
 	}
-
 	return v
 }

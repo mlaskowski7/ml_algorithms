@@ -12,7 +12,7 @@ func main() {
 		return
 	}
 
-	for i := 0; i < 10; i++ {
+	for i := 1; i < 10; i++ {
 		accuracy, err := dataset.TestAlgorithm(i)
 		if err == nil {
 			fmt.Printf("Accuracy for k = %d is equal to %s\n", i, accuracy)

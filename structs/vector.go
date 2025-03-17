@@ -8,7 +8,7 @@ import (
 type Vector struct {
 	rows  int32
 	cols  int32
-	data  [][]int32
+	data  [][]float64
 	class string
 }
 
@@ -16,7 +16,7 @@ func (v *Vector) Class() string {
 	return v.class
 }
 
-func NewVector(data [][]int32, vecClass string) (*Vector, error) {
+func NewVector(data [][]float64, vecClass string) (*Vector, error) {
 	rows := int32(len(data))
 	if rows == 0 {
 		return nil, fmt.Errorf("empty vector")
@@ -36,10 +36,10 @@ func (v *Vector) AddVector(v2 *Vector) (*Vector, error) {
 		return nil, fmt.Errorf("cannot add vector with this dimensions: v1[%d, %d], v2[%d, %d]", v.rows, v.cols, v2.rows, v2.cols)
 	}
 
-	resultData := make([][]int32, v.rows)
+	resultData := make([][]float64, v.rows)
 
 	for i := range v.data {
-		resultData[i] = make([]int32, v.cols)
+		resultData[i] = make([]float64, v.cols)
 		for j := range v.data[i] {
 			resultData[i][j] = v.data[i][j] + v2.data[i][j]
 		}
@@ -52,11 +52,11 @@ func (v *Vector) AddVector(v2 *Vector) (*Vector, error) {
 	}, nil
 }
 
-func (v *Vector) ScalarMultiply(scalar int32) *Vector {
-	resultData := make([][]int32, v.rows)
+func (v *Vector) ScalarMultiply(scalar float64) *Vector {
+	resultData := make([][]float64, v.rows)
 
 	for i := range v.data {
-		resultData[i] = make([]int32, v.cols)
+		resultData[i] = make([]float64, v.cols)
 		for j := range v.data[i] {
 			resultData[i][j] = v.data[i][j] * scalar
 		}
@@ -70,14 +70,14 @@ func (v *Vector) ScalarMultiply(scalar int32) *Vector {
 }
 
 func (v *Vector) EuclideanNorm() float64 {
-	var sumSquares int32
+	var sumSquares float64
 	for i := range v.data {
 		for j := range v.data[i] {
 			sumSquares += v.data[i][j] * v.data[i][j]
 		}
 	}
 
-	return math.Sqrt(float64(sumSquares))
+	return math.Sqrt(sumSquares)
 }
 
 func (v *Vector) EuclideanDistance(v2 *Vector) (float64, error) {
@@ -86,7 +86,7 @@ func (v *Vector) EuclideanDistance(v2 *Vector) (float64, error) {
 			v.rows, v.cols, v2.rows, v2.cols)
 	}
 
-	var sumSquares int32
+	var sumSquares float64
 	for i := range v.data {
 		for j := range v.data[i] {
 			diff := v.data[i][j] - v2.data[i][j]
@@ -94,16 +94,16 @@ func (v *Vector) EuclideanDistance(v2 *Vector) (float64, error) {
 		}
 	}
 
-	return math.Sqrt(float64(sumSquares)), nil
+	return math.Sqrt(sumSquares), nil
 }
 
-func (v *Vector) DotProduct(v2 *Vector) (int32, error) {
+func (v *Vector) DotProduct(v2 *Vector) (float64, error) {
 	if v.rows != v2.rows || v.cols != v2.cols {
 		return 0, fmt.Errorf("cannot calculate dot product for different dimensions: v1[%d, %d], v2[%d, %d]",
 			v.rows, v.cols, v2.rows, v2.cols)
 	}
 
-	var dot int32
+	var dot float64
 	for i := range v.data {
 		for j := range v.data[i] {
 			dot += v.data[i][j] * v2.data[i][j]

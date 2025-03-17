@@ -37,13 +37,13 @@ func NewDatasetFromCsv(filename string) (*Dataset, error) {
 	var dataset []structs.Vector
 
 	for _, line := range lines {
-		var row []int32
+		var row []float64
 		for i := 0; i < len(line)-1; i++ {
-			intValue, _ := strconv.ParseInt(line[i], 0, 64)
-			row = append(row, int32(intValue))
+			floatValue, _ := strconv.ParseFloat(line[i], 64)
+			row = append(row, floatValue)
 		}
 		class := line[len(line)-1]
-		vec, _ := structs.NewVector([][]int32{row}, class)
+		vec, _ := structs.NewVector([][]float64{row}, class)
 		dataset = append(dataset, *vec)
 	}
 
