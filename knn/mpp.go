@@ -66,7 +66,7 @@ func (d *Dataset) TestAlgorithm(k int) (string, error) {
 		expectedClasses[i] = vec.Class()
 		predicted, err := d.PredictWithKnn(vec, k)
 		if err != nil {
-			fmt.Printf("ERROR OCCURRED IN K = %d, not evaluating this k further", i)
+			fmt.Printf("ERROR OCCURRED IN K = %d, not evaluating this k further", k)
 			return "", err
 		}
 		actualClasses[i] = predicted

@@ -30,13 +30,5 @@ func TrainTestSplit(dataset *[]structs.Vector) ([]structs.Vector, []structs.Vect
 		testSet = append(testSet, group[trainLen:]...)
 	}
 
-	rand.Shuffle(len(trainSet), func(i, j int) {
-		trainSet[i], trainSet[j] = trainSet[j], trainSet[i]
-	})
-
-	rand.Shuffle(len(testSet), func(i, j int) {
-		testSet[i], testSet[j] = testSet[j], testSet[i]
-	})
-
 	return trainSet, testSet
 }
