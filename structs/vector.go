@@ -16,6 +16,10 @@ func (v *Vector) Class() string {
 	return v.class
 }
 
+func (v *Vector) SetClass(class string) {
+	v.class = class
+}
+
 func NewVector(data [][]float64, vecClass string) (*Vector, error) {
 	rows := int32(len(data))
 	if rows == 0 {

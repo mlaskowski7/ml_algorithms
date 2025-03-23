@@ -2,6 +2,7 @@ package perceptron
 
 import (
 	"fmt"
+	"naiTasks/commons"
 )
 
 type Perceptron struct {
@@ -45,6 +46,7 @@ func (p *Perceptron) Train(inputs [][]float64, labels []int) (int, error) {
 
 	for {
 		errors := 0
+		predictedLabels := make([]int, len(labels))
 		for index, input := range inputs {
 			expectedPrediction := labels[index]
 			prediction, err := p.Predict(input)
@@ -52,6 +54,7 @@ func (p *Perceptron) Train(inputs [][]float64, labels []int) (int, error) {
 				return 0, err
 			}
 
+			predictedLabels[index] = prediction
 			if prediction != expectedPrediction {
 				errors += 1
 			}
@@ -62,17 +65,13 @@ func (p *Perceptron) Train(inputs [][]float64, labels []int) (int, error) {
 			}
 			p.threshold -= float64(expectedPrediction-prediction) * p.learningRate
 		}
-
+		accuracy := commons.MeasureAccuracy(labels, predictedLabels)
 		epochCounter += 1
-		fmt.Printf("Epoch no.(%d) had %d errors\n", epochCounter, errors)
+		fmt.Printf("Accuracy in epoch no.%d: %d%%\n", epochCounter, accuracy)
+		fmt.Printf("Epoch no.%d had %d errors\n", epochCounter, errors)
 
 		if errors <= 0 {
 			break
-		}
-
-		// Optional: add maxEpochs limit to avoid infinite loops on non-linearly separable data
-		if epochCounter > 10000 {
-			return epochCounter, fmt.Errorf("did not converge after %d epochs", epochCounter)
 		}
 	}
 

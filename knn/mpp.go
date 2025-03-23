@@ -10,8 +10,8 @@ import (
 )
 
 type Dataset struct {
-	trainDataset []structs.Vector
-	testDataset  []structs.Vector
+	TrainDataset []structs.Vector
+	TestDataset  []structs.Vector
 }
 
 func NewDatasetFromCsv(filename string) (*Dataset, error) {
@@ -53,16 +53,16 @@ func NewDatasetFromCsv(filename string) (*Dataset, error) {
 }
 
 func (d *Dataset) PredictWithKnn(observation structs.Vector, k int) (class string, err error) {
-	knn := NewKnn(k, d.trainDataset)
+	knn := NewKnn(k, d.TrainDataset)
 	class, err = knn.PerformPrediction(&observation)
 	return
 }
 
 func (d *Dataset) TestAlgorithm(k int) (string, error) {
-	expectedClasses := make([]string, len(d.testDataset))
-	actualClasses := make([]string, len(d.testDataset))
+	expectedClasses := make([]string, len(d.TestDataset))
+	actualClasses := make([]string, len(d.TestDataset))
 
-	for i, vec := range d.testDataset {
+	for i, vec := range d.TestDataset {
 		expectedClasses[i] = vec.Class()
 		predicted, err := d.PredictWithKnn(vec, k)
 		if err != nil {

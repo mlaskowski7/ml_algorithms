@@ -1,10 +1,14 @@
 package commons
 
 // MeasureAccuracy returns percent of correct predictions, example: returned 100 = 100% prediction rate
-func MeasureAccuracy(expectedClasses []string, actualClasses []string) int {
+func MeasureAccuracy[T comparable](expectedClasses []T, actualClasses []T) int {
+	if len(expectedClasses) != len(actualClasses) {
+		panic("Length mismatch between expectedClasses and actualClasses")
+	}
+
 	var correctCounter int
-	for i := 0; i < len(actualClasses); i++ {
-		if actualClasses[i] == expectedClasses[i] {
+	for i := 0; i < len(expectedClasses); i++ {
+		if expectedClasses[i] == actualClasses[i] {
 			correctCounter++
 		}
 	}

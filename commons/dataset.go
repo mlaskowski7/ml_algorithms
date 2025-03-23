@@ -6,7 +6,7 @@ import (
 	"naiTasks/structs"
 )
 
-const trainSetPercent = 0.66
+const trainSetPercent = 0.70
 
 func TrainTestSplit(dataset *[]structs.Vector) ([]structs.Vector, []structs.Vector) {
 	dereferencedDataset := *dataset
@@ -31,4 +31,17 @@ func TrainTestSplit(dataset *[]structs.Vector) ([]structs.Vector, []structs.Vect
 	}
 
 	return trainSet, testSet
+}
+
+func TrainTestSplitWithLabels(inputs [][]float64, labels []int) (trainInputs [][]float64, trainLabels []int, testInputs [][]float64, testLabels []int) {
+	rand.Shuffle(len(inputs), func(i, j int) {
+		inputs[i], inputs[j] = inputs[j], inputs[i]
+		labels[i], labels[j] = labels[j], labels[i]
+	})
+
+	splitIndex := int(float64(len(inputs)) * trainSetPercent)
+	trainInputs, trainLabels = inputs[:splitIndex], labels[:splitIndex]
+	testInputs, testLabels = inputs[splitIndex:], labels[splitIndex:]
+
+	return trainInputs, trainLabels, testInputs, testLabels
 }

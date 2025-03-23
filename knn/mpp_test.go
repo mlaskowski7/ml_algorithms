@@ -10,18 +10,18 @@ func TestNewDatasetFromCsv(t *testing.T) {
 		t.Fatalf("Failed to create new dataset from csv file -> %s", err.Error())
 	}
 
-	if len(dataset.trainDataset) != 100 {
-		t.Errorf("Expected the train dataset to be length of 100, but was %d", len(dataset.trainDataset))
+	if len(dataset.TrainDataset) != 100 {
+		t.Errorf("Expected the train dataset to be length of 100, but was %d", len(dataset.TrainDataset))
 	}
 }
 
 func TestPredictWithKnn(t *testing.T) {
 	dataset, _ := NewDatasetFromCsv("../data/IRIS.csv")
-	if len(dataset.trainDataset) != 100 {
-		t.Fatalf("Training data set was expected to be 100 observations, but was %d", len(dataset.trainDataset))
+	if len(dataset.TrainDataset) != 100 {
+		t.Fatalf("Training data set was expected to be 100 observations, but was %d", len(dataset.TrainDataset))
 	}
 
-	observation := dataset.testDataset[0]
+	observation := dataset.TestDataset[0]
 	predictedClass, err := dataset.PredictWithKnn(observation, 3)
 
 	if err != nil {
