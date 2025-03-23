@@ -1,8 +1,12 @@
 package perceptron
 
 import (
+	"encoding/csv"
 	"fmt"
 	"naiTasks/commons"
+	"os"
+	"strconv"
+	"time"
 )
 
 type Perceptron struct {
@@ -44,6 +48,22 @@ func (p *Perceptron) Predict(inputs []float64) (int, error) {
 func (p *Perceptron) Train(inputs [][]float64, labels []int) (int, error) {
 	var epochCounter int
 
+	timestamp := time.Now().Format("20060102_150405")
+	fileName := fmt.Sprintf("perceptron_accuracy_%s.csv", timestamp)
+	file, err := os.Create("data/" + fileName)
+	if err != nil {
+		return 0, fmt.Errorf("failed to create csv file: %v", err)
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	err = writer.Write([]string{"Epoch", "Errors", "Accuracy"})
+	if err != nil {
+		return 0, fmt.Errorf("failed to write to csv file: %v", err)
+	}
+
 	for {
 		errors := 0
 		predictedLabels := make([]int, len(labels))
@@ -69,6 +89,15 @@ func (p *Perceptron) Train(inputs [][]float64, labels []int) (int, error) {
 		epochCounter += 1
 		fmt.Printf("Accuracy in epoch no.%d: %d%%\n", epochCounter, accuracy)
 		fmt.Printf("Epoch no.%d had %d errors\n", epochCounter, errors)
+
+		err := writer.Write([]string{
+			strconv.Itoa(epochCounter),
+			fmt.Sprintf("%d", errors),
+			fmt.Sprintf("%d", accuracy),
+		})
+		if err != nil {
+			return 0, fmt.Errorf("failed to write to csv file: %v", err)
+		}
 
 		if errors <= 0 {
 			break
