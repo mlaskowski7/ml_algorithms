@@ -1,12 +1,14 @@
 package perceptron
 
 import (
+	"bufio"
 	"encoding/csv"
 	"fmt"
 	"math/rand"
 	"naiTasks/commons"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func TrainPerceptronOnIrisCsv(filePath string) error {
@@ -45,7 +47,55 @@ func TrainPerceptronOnIrisCsv(filePath string) error {
 
 	testAccuracy := commons.MeasureAccuracy(testLabels, predictedLabels)
 	fmt.Printf("Final perceptron accuracy after testing is %v%%", testAccuracy)
+	listenForObservationInput(perceptron)
 	return nil
+}
+
+func listenForObservationInput(perceptron *Perceptron) {
+	reader := bufio.NewReader(os.Stdin)
+
+	for {
+		fmt.Println("\nEnter sepal length, sepal width, petal length, petal width separated by commas to start prediction:")
+
+		inputLine, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Printf("Failed to read input: %v\n", err)
+			continue
+		}
+
+		inputLine = strings.TrimSpace(inputLine)
+
+		parts := strings.Split(inputLine, ",")
+		if len(parts) != 4 {
+			fmt.Println("Please enter exactly 4 floats separated by space.")
+			continue
+		}
+
+		observation := make([]float64, 4)
+		for i, val := range parts {
+			num, err := strconv.ParseFloat(val, 64)
+			if err != nil {
+				fmt.Printf("Cant parse '%s'", val)
+				continue
+			}
+			observation[i] = num
+		}
+
+		prediction, err := perceptron.Predict(observation)
+		if err != nil {
+			fmt.Printf("Cant predict: %v\n", err)
+			continue
+		}
+
+		className := ""
+		if prediction == 1 {
+			className = "Iris-setosa"
+		} else {
+			className = "Iris-versicolor"
+		}
+
+		fmt.Printf("Result: %d (%s)\n", prediction, className)
+	}
 }
 
 func getInputsAndLabelsFromCsv(filePath string) ([][]float64, []int, error) {
