@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/csv"
 	"fmt"
-	"math/rand"
 	"naiTasks/commons"
 	"os"
 	"strconv"
@@ -22,7 +21,7 @@ func TrainPerceptronOnIrisCsv(filePath string) error {
 	// random weights at start
 	weights := make([]float64, len(trainInputs[0]))
 	for i := range weights {
-		weights[i] = rand.Float64()*0.1 - 0.05
+		weights[i] = 10
 	}
 
 	perceptron, err := NewPerceptron(len(weights), weights, 0.0, 0.1)

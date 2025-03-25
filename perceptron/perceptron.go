@@ -54,7 +54,12 @@ func (p *Perceptron) Train(inputs [][]float64, labels []int) (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("failed to create csv file: %v", err)
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+
+		}
+	}(file)
 
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
@@ -102,6 +107,46 @@ func (p *Perceptron) Train(inputs [][]float64, labels []int) (int, error) {
 		if errors <= 0 {
 			break
 		}
+	}
+
+	dataFile, err := os.Create("data/perceptron_hyperplane_data" + timestamp + ".csv")
+	if err != nil {
+		return 0, fmt.Errorf("failed to create plot data file: %v", err)
+	}
+	defer func(dataFile *os.File) {
+		err := dataFile.Close()
+		if err != nil {
+
+		}
+	}(dataFile)
+
+	dataWriter := csv.NewWriter(dataFile)
+	defer dataWriter.Flush()
+
+	err = dataWriter.Write([]string{"x", "y", "label"})
+	if err != nil {
+		return 0, fmt.Errorf("failed to write header to plot data: %v", err)
+	}
+
+	for i, input := range inputs {
+		err = dataWriter.Write([]string{
+			fmt.Sprintf("%f", input[0]),
+			fmt.Sprintf("%f", input[1]),
+			strconv.Itoa(labels[i]),
+		})
+		if err != nil {
+			return 0, fmt.Errorf("failed to write input to plot data: %v", err)
+		}
+	}
+
+	err = dataWriter.Write([]string{
+		"#weights",
+		fmt.Sprintf("%f", p.weights[0]),
+		fmt.Sprintf("%f", p.weights[1]),
+		fmt.Sprintf("%f", p.threshold),
+	})
+	if err != nil {
+		return 0, fmt.Errorf("failed to write weights to plot data: %v", err)
 	}
 
 	return epochCounter, nil

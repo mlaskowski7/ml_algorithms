@@ -15,3 +15,15 @@ func MeasureAccuracy[T comparable](expectedClasses []T, actualClasses []T) int {
 
 	return int(float64(correctCounter) / float64(len(actualClasses)) * 100)
 }
+
+func Fmeasure(p int, r int) float64 {
+	return float64(2*p*r) / float64(p+r)
+}
+
+func Recall(tp int, fn int, fp int) float64 {
+	return float64(tp) / float64(fn+fp)
+}
+
+func Precision(tp int, fp int) float64 {
+	return float64(tp) / float64(fp+tp)
+}
