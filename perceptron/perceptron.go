@@ -50,7 +50,7 @@ func (p *Perceptron) Train(inputs [][]float64, labels []int) (int, error) {
 
 	timestamp := time.Now().Format("20060102_150405")
 	fileName := fmt.Sprintf("perceptron_accuracy_%s.csv", timestamp)
-	file, err := os.Create("data/" + fileName)
+	file, err := os.Create("results/" + fileName)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create csv file: %v", err)
 	}
@@ -109,7 +109,7 @@ func (p *Perceptron) Train(inputs [][]float64, labels []int) (int, error) {
 		}
 	}
 
-	dataFile, err := os.Create("data/perceptron_hyperplane_data" + timestamp + ".csv")
+	dataFile, err := os.Create("results/perceptron_hyperplane_data" + timestamp + ".csv")
 	if err != nil {
 		return 0, fmt.Errorf("failed to create plot data file: %v", err)
 	}
