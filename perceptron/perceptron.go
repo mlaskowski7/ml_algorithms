@@ -29,6 +29,14 @@ func NewPerceptron(dimension int, weights []float64, threshold float64, learning
 	}, nil
 }
 
+func (p *Perceptron) Weights() []float64 {
+	return p.weights
+}
+
+func (p *Perceptron) Threshold() float64 {
+	return p.threshold
+}
+
 func (p *Perceptron) Predict(inputs []float64) (int, error) {
 	if len(inputs) != p.dimension {
 		return 0, fmt.Errorf("inputs length(%d) do not match the dimension(%d)", len(inputs), p.dimension)
