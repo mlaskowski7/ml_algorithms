@@ -1,9 +1,11 @@
 package commons
 
+import "fmt"
+
 // MeasureAccuracy returns percent of correct predictions, example: returned 100 = 100% prediction rate
 func MeasureAccuracy[T comparable](expectedClasses []T, actualClasses []T) int {
 	if len(expectedClasses) != len(actualClasses) {
-		panic("Length mismatch between expectedClasses and actualClasses")
+		panic(fmt.Sprintf("Length mismatch between expectedClasses(%d) and actualClasses(%d)", len(expectedClasses), len(actualClasses)))
 	}
 
 	var correctCounter int

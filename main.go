@@ -1,13 +1,7 @@
 package main
 
-import (
-	"fmt"
-	"naiTasks/perceptron"
-)
+import "naiTasks/singlelayernn"
 
 func main() {
-	err := perceptron.TrainPerceptronOnIrisCsv("data/iris.csv")
-	if err != nil {
-		fmt.Println(err)
-	}
+	_, _ = singlelayernn.TestLanguageNeuralNetwork()
 }
