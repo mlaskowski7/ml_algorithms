@@ -1,7 +1,12 @@
 package main
 
-import "naiTasks/singlelayernn"
+import (
+	"fmt"
+	"naiTasks/bayes"
+)
 
 func main() {
-	_, _ = singlelayernn.TestLanguageNeuralNetwork()
+	//_, _ = singlelayernn.TestLanguageNeuralNetwork()
+
+	fmt.Println("after smoothing ", bayes.SimpleSmoothing(0, 10, 12))
 }
